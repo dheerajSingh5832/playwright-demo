@@ -1,0 +1,23 @@
+{
+  "product1": {
+    "name": "Laptop",
+    "category": "Electronics",
+    "price": 999.99,
+    "quantity": 1,
+    "sku": "LAPTOP-001"
+  },
+  "product2": {
+    "name": "Wireless Mouse",
+    "category": "Accessories",
+    "price": 29.99,
+    "quantity": 2,
+    "sku": "MOUSE-002"
+  },
+  "product3": {
+    "name": "USB-C Cable",
+    "category": "Cables",
+    "price": 14.99,
+    "quantity": 5,
+    "sku": "CABLE-003"
+  }
+}
