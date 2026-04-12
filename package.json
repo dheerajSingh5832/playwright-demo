@@ -17,6 +17,8 @@
     "trace": "playwright show-trace",
     "codegen": "playwright codegen",
     "init-agents": "playwright init-agents --loop=vscode",
+    "sheets:setup": "bash setup-google-sheets.sh",
+    "sheets:check": "bash setup-google-sheets.sh",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"**/*.{ts,json,md}\""
   },
@@ -38,6 +40,7 @@
     "allure-playwright": "^3.0.0",
     "dotenv": "^16.4.0",
     "eslint": "^8.57.0",
+    "googleapis": "^171.4.0",
     "prettier": "^3.2.0",
     "typescript": "^5.4.0"
   },

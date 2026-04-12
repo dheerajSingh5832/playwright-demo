@@ -19,6 +19,7 @@ This framework includes three AI agents:
 - ✅ **Custom Fixtures** - Reusable test components
 - ✅ **API Testing** - Built-in REST API support
 - ✅ **Multi-Browser** - Chromium, Firefox, WebKit
+- ✅ **Google Sheets Export** - Auto-export results to spreadsheet
 - ✅ **Allure Reports** - Beautiful test reporting
 - ✅ **CI/CD Ready** - GitHub Actions included
 - ✅ **Test Data Management** - JSON-based data handling
@@ -63,142 +64,149 @@ cp .env.example .env
 
 ```
 playwright-framework/
-├── src/
-│   ├── main/
-│   │   └── java/
-│   │       └── com/automation/
-│   │           ├── core/              # Core framework components
-│   │           │   ├── BrowserFactory.java
-│   │           │   ├── BasePage.java
-│   │           │   └── ConfigManager.java
-│   │           └── utils/             # Utility classes
-│   │               ├── TestDataManager.java
-│   │               └── WaitHelper.java
-│   └── test/
-│       ├── java/
-│       │   └── com/automation/
-│       │       ├── base/              # Base test class
-│       │       │   └── BaseTest.java
-│       │       ├── pages/             # Page Object classes
-│       │       │   ├── LoginPage.java
-│       │       │   └── HomePage.java
-│       │       └── tests/             # Test classes
-│       │           ├── LoginTest.java
-│       │           └── SampleApiTest.java
-│       └── resources/
-│           ├── config/                # Environment configurations
-│           │   ├── application.properties
-│           │   ├── qa.properties
-│           │   └── staging.properties
-│           ├── testdata/              # Test data files
-│           │   ├── users.json
-│           │   └── products.json
-│           ├── testng.xml             # TestNG suite configuration
-│           └── logback.xml            # Logging configuration
-├── pom.xml                            # Maven dependencies
-└── README.md
+├── pages/                    # Page Object Model classes
+│   ├── base.page.ts         # Base page with common methods
+│   ├── login.page.ts        # Login page object
+│   ├── home.page.ts         # Home page object
+│   ├── cart.page.ts         # Cart page object
+│   └── product.page.ts      # Product page object
+├── tests/                   # Test specifications
+│   ├── auth/               # Authentication tests
+│   │   └── login.spec.ts   # Login test scenarios
+│   ├── e2e/                # End-to-end tests
+│   │   └── sauce-demo.spec.ts
+│   └── api/                # API tests
+│       └── sample-api.spec.ts
+├── fixtures/               # Custom fixtures & test data
+│   ├── custom-fixtures.ts  # Reusable test fixtures
+│   └── test-data.ts        # Test data management
+├── utils/                  # Utility functions
+│   └── helpers.ts          # Helper methods
+├── test-data/             # JSON test data files
+│   ├── users.json
+│   └── products.json
+├── playwright.config.ts   # Playwright configuration
+├── tsconfig.json         # TypeScript configuration
+└── package.json          # Node.js dependencies
 ```
 
 ## 🧪 Running Tests
 
 ### Run all tests
 ```bash
-mvn clean test
+npx playwright test
 ```
 
-### Run specific test class
+### Run specific test file
 ```bash
-mvn clean test -Dtest=LoginTest
+npx playwright test tests/auth/login.spec.ts
 ```
 
 ### Run with specific browser
 ```bash
-mvn clean test -Dbrowser=chromium  # or firefox, webkit
+npx playwright test --project=chromium  # or firefox, webkit
 ```
 
 ### Run in headed mode
 ```bash
-mvn clean test -Dheadless=false
+npx playwright test --headed
 ```
 
-### Run with specific environment
+### Run in debug mode
 ```bash
-mvn clean test -Denv=qa  # or staging
+npx playwright test --debug
 ```
 
 ### Run tests in parallel
 ```bash
-mvn clean test -DthreadCount=5
+npx playwright test --workers=5
 ```
 
 ## 📊 Reports
 
-### Generate Allure Report
+### View HTML Report
 ```bash
-mvn allure:serve
+npx playwright show-report
 ```
 
-### Generate Allure Report (without opening)
+### Generate report after test run
 ```bash
-mvn allure:report
+npx playwright test --reporter=html
 ```
 
-Reports will be generated in `target/allure-results/`
+Reports will be generated in `playwright-report/`
+
+### Google Sheets Export 📊
+
+Test results are **automatically exported with beautiful formatting** to Google Sheets!
+
+**Setup (one-time, 5 minutes):**
+```bash
+npm run sheets:check    # Run setup helper
+```
+
+1. Create Google Cloud service account at https://console.cloud.google.com
+2. Enable Google Sheets API
+3. Download JSON key as `google-credentials.json`
+4. Share your spreadsheet with the service account email (Editor access)
+
+**Your Spreadsheet:** https://docs.google.com/spreadsheets/d/1ybzVjsmrH7HFVgebsRocZbr2lnacmW6TWdc-8hWIKBs
+
+**Features:**
+- 🎨 Auto-creates formatted table with color-coded rows (🟢🟡🟠🔴 by pass rate)
+- 📊 Tracks: Timestamp, Pass/Fail counts, Duration, Browser, Environment
+- ✨ Highlights failed tests in bold red
 
 ## 🎯 Writing Tests
 
-### Example Test Class
+### Example Test
 
-```java
-@Epic("Feature Name")
-@Feature("Functionality")
-public class MyTest extends BaseTest {
+```typescript
+import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/login.page';
+
+test.describe('Login Tests', () => {
+  test('should login successfully', async ({ page }) => {
+    const loginPage = new LoginPage(page);
     
-    @Test(description = "Test description")
-    @Severity(SeverityLevel.CRITICAL)
-    public void testSomething() {
-        MyPage myPage = new MyPage(page);
-        
-        // Test steps
-        myPage.navigateToPage("https://example.com");
-        myPage.performAction();
-        
-        // Assertions
-        assertThat(myPage.getResult()).isEqualTo("Expected");
-    }
-}
+    // Test steps
+    await loginPage.goto();
+    await loginPage.login('user@example.com', 'password');
+    
+    // Assertions
+    await expect(page).toHaveURL(/dashboard/);
+  });
+});
 ```
 
 ### Example Page Object
 
-```java
-public class MyPage extends BasePage {
-    
-    private static final String ELEMENT = "#element-id";
-    
-    public MyPage(Page page) {
-        super(page);
-    }
-    
-    @Step("Perform action")
-    public void performAction() {
-        click(ELEMENT);
-    }
+```typescript
+import { Page, Locator } from '@playwright/test';
+import { BasePage } from './base.page';
+
+export class MyPage extends BasePage {
+  readonly element: Locator;
+  
+  constructor(page: Page) {
+    super(page);
+    this.element = page.locator('#element-id');
+  }
+  
+  async performAction(): Promise<void> {
+    await this.element.click();
+  }
 }
 ```
 
 ## ⚙️ Configuration
 
-Configuration files are located in `src/test/resources/config/`:
+Configuration is managed in `playwright.config.ts` and `.env` files:
 
-- `application.properties` - Default configuration
-- `qa.properties` - QA environment
-- `staging.properties` - Staging environment
+- `playwright.config.ts` - Test runner configuration
+- `.env` - Environment variables (BASE_URL, API keys, etc.)
 
-Switch environments using:
-```bash
-mvn clean test -Denv=qa
-```
+The framework supports multiple environments through environment variables.
 
 ## 🔧 Supported Browsers
 
@@ -212,25 +220,30 @@ Test data is stored in JSON format under `src/test/resources/testdata/`
 
 Access test data using:
 ```java
-TestDataManager.getTestDataValue("users.json", "validUser.username");
-```
+TestDataManager.getTestDataValue("users.jstest-data/`
 
-## 🐛 Debugging
+Access test data using:
+```typescript
+import { testData } from '../fixtures/test-data';
 
+const user = testData.users.validUser;
+await loginPage.login(user.username, user.password
 ### View traces
 Traces are saved in `target/traces/` after test execution.
-
-To view:
 ```bash
-mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="show-trace target/traces/trace.zip"
+npx playwright show-trace test-results/trace.zip
+```
+
+### Run with UI Mode
+```bash
+npx playwright test --ui
 ```
 
 ### Screenshots
-Screenshots are automatically captured on test failure in `target/screenshots/`
+Screenshots are automatically captured on test failure in `test-results/`
 
 ### Videos
-Test execution videos are saved in `target/videos/`
-
+Test execution videos are saved in `test-results/` when configured
 ## 🔄 CI/CD
 
 The framework includes a GitHub Actions workflow (`.github/workflows/tests.yml`) for automatic test execution on:
@@ -240,12 +253,12 @@ The framework includes a GitHub Actions workflow (`.github/workflows/tests.yml`)
 
 ## 📚 Best Practices
 
-1. **Use Page Object Model** - Keep page locators and actions in page classes
-2. **Add @Step annotations** - For better Allure reporting
-3. **Use AssertJ** - For fluent and readable assertions
+1. **Use TypeScript types** - Leverage type safety for better reliability
+3. **Use Playwright assertions** - Built-in expect() with auto-waiting
 4. **Handle waits properly** - Use built-in Playwright waiting mechanisms
 5. **Keep tests independent** - Each test should run standalone
 6. **Use meaningful names** - Test and method names should be descriptive
+7. **Use fixtures** - For reusable test setup and teardown be descriptive
 7. **Add proper logging** - Use SLF4J logger for debugging
 
 ## 🤝 Contributing
@@ -263,17 +276,17 @@ This project is licensed under the MIT License.
 ## 🆘 Troubleshooting
 
 ### Browsers not installed
-```bash
-mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install"
+npx playwright install
 ```
 
-### Clean build
+### Clear test cache
 ```bash
-mvn clean install -U
+rm -rf test-results/ playwright-report/
 ```
 
-### Skip tests during build
+### Update dependencies
 ```bash
+npm update
 mvn clean install -DskipTests
 ```
 

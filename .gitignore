@@ -29,6 +29,9 @@ build/
 .env.local
 .env.*.local
 
+# Google Sheets API Credentials
+google-credentials.json
+
 # IDE
 .vscode/*
 !.vscode/extensions.json
