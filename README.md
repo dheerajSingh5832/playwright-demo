@@ -4,11 +4,63 @@ A comprehensive test automation framework using **Playwright with TypeScript**, 
 
 ## 🤖 Playwright Test Agents
 
-This framework includes three AI agents:
+This framework includes four AI agents for intelligent test automation:
 
-- **🎭 Planner** - Explores your app and creates test plans
-- **🎭 Generator** - Transforms plans into executable tests
-- **🎭 Healer** - Auto-fixes failing tests
+- **🎭 Planner** - Explores your app and creates comprehensive test plans
+- **🎭 Generator** - Transforms test plans into executable Playwright tests
+- **🎭 Healer** - Automatically debugs and fixes failing tests
+- **📊 Coverage Analyzer** - Compares test plans vs. implementations to identify coverage gaps
+
+### Using the Agents
+
+#### 🎭 Test Planner
+
+```
+@playwright-test-planner create test plan for https://your-app.com
+```
+
+Generates: `specs/testplan.md` with comprehensive test scenarios
+
+#### 🎭 Test Generator
+
+```
+@playwright-test-generator implement tests from specs/testplan.md
+```
+
+Creates: Executable `.spec.ts` files from test plan
+
+#### 🎭 Test Healer
+
+```
+@playwright-test-healer fix failing test in tests/auth/login.spec.ts
+```
+
+Debugs and repairs: Broken tests automatically
+
+#### 📊 Coverage Analyzer
+
+```
+@playwright-coverage-analyzer analyze coverage for specs/testplan.md
+```
+
+Generates: Detailed coverage report showing:
+
+- ✅ Fully covered scenarios
+- ⚠️ Partially covered tests
+- ❌ Missing implementations
+- 📝 Tests not in plan
+
+**Workflow Example:**
+
+```
+1. Planner → creates specs/testplan.md
+2. Generator → creates tests/**/*.spec.ts
+3. Run Tests → npx playwright test
+4. Coverage Analyzer → validates complete coverage
+5. Healer → fixes any failures
+```
+
+See [Coverage Guide](specs/COVERAGE_GUIDE.md) for detailed usage.
 
 ## 🚀 Features
 
@@ -26,7 +78,7 @@ This framework includes three AI agents:
 
 ## 📋 Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - VS Code v1.105+ (for agent experience)
 
@@ -93,31 +145,37 @@ playwright-framework/
 ## 🧪 Running Tests
 
 ### Run all tests
+
 ```bash
 npx playwright test
 ```
 
 ### Run specific test file
+
 ```bash
 npx playwright test tests/auth/login.spec.ts
 ```
 
 ### Run with specific browser
+
 ```bash
 npx playwright test --project=chromium  # or firefox, webkit
 ```
 
 ### Run in headed mode
+
 ```bash
 npx playwright test --headed
 ```
 
 ### Run in debug mode
+
 ```bash
 npx playwright test --debug
 ```
 
 ### Run tests in parallel
+
 ```bash
 npx playwright test --workers=5
 ```
@@ -125,11 +183,13 @@ npx playwright test --workers=5
 ## 📊 Reports
 
 ### View HTML Report
+
 ```bash
 npx playwright show-report
 ```
 
 ### Generate report after test run
+
 ```bash
 npx playwright test --reporter=html
 ```
@@ -141,6 +201,7 @@ Reports will be generated in `playwright-report/`
 Test results are **automatically exported with beautiful formatting** to Google Sheets!
 
 **Setup (one-time, 5 minutes):**
+
 ```bash
 npm run sheets:check    # Run setup helper
 ```
@@ -153,6 +214,7 @@ npm run sheets:check    # Run setup helper
 **Your Spreadsheet:** https://docs.google.com/spreadsheets/d/1ybzVjsmrH7HFVgebsRocZbr2lnacmW6TWdc-8hWIKBs
 
 **Features:**
+
 - 🎨 Auto-creates formatted table with color-coded rows (🟢🟡🟠🔴 by pass rate)
 - 📊 Tracks: Timestamp, Pass/Fail counts, Duration, Browser, Environment
 - ✨ Highlights failed tests in bold red
@@ -168,11 +230,11 @@ import { LoginPage } from '../pages/login.page';
 test.describe('Login Tests', () => {
   test('should login successfully', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    
+
     // Test steps
     await loginPage.goto();
     await loginPage.login('user@example.com', 'password');
-    
+
     // Assertions
     await expect(page).toHaveURL(/dashboard/);
   });
@@ -187,12 +249,12 @@ import { BasePage } from './base.page';
 
 export class MyPage extends BasePage {
   readonly element: Locator;
-  
+
   constructor(page: Page) {
     super(page);
     this.element = page.locator('#element-id');
   }
-  
+
   async performAction(): Promise<void> {
     await this.element.click();
   }
@@ -219,7 +281,8 @@ The framework supports multiple environments through environment variables.
 Test data is stored in JSON format under `src/test/resources/testdata/`
 
 Access test data using:
-```java
+
+````java
 TestDataManager.getTestDataValue("users.jstest-data/`
 
 Access test data using:
@@ -232,21 +295,26 @@ await loginPage.login(user.username, user.password
 Traces are saved in `target/traces/` after test execution.
 ```bash
 npx playwright show-trace test-results/trace.zip
-```
+````
 
 ### Run with UI Mode
+
 ```bash
 npx playwright test --ui
 ```
 
 ### Screenshots
+
 Screenshots are automatically captured on test failure in `test-results/`
 
 ### Videos
+
 Test execution videos are saved in `test-results/` when configured
+
 ## 🔄 CI/CD
 
 The framework includes a GitHub Actions workflow (`.github/workflows/tests.yml`) for automatic test execution on:
+
 - Push to main/develop branches
 - Pull requests
 - Scheduled runs
@@ -254,11 +322,11 @@ The framework includes a GitHub Actions workflow (`.github/workflows/tests.yml`)
 ## 📚 Best Practices
 
 1. **Use TypeScript types** - Leverage type safety for better reliability
-3. **Use Playwright assertions** - Built-in expect() with auto-waiting
-4. **Handle waits properly** - Use built-in Playwright waiting mechanisms
-5. **Keep tests independent** - Each test should run standalone
-6. **Use meaningful names** - Test and method names should be descriptive
-7. **Use fixtures** - For reusable test setup and teardown be descriptive
+2. **Use Playwright assertions** - Built-in expect() with auto-waiting
+3. **Handle waits properly** - Use built-in Playwright waiting mechanisms
+4. **Keep tests independent** - Each test should run standalone
+5. **Use meaningful names** - Test and method names should be descriptive
+6. **Use fixtures** - For reusable test setup and teardown be descriptive
 7. **Add proper logging** - Use SLF4J logger for debugging
 
 ## 🤝 Contributing
@@ -276,15 +344,18 @@ This project is licensed under the MIT License.
 ## 🆘 Troubleshooting
 
 ### Browsers not installed
+
 npx playwright install
-```
+
+````
 
 ### Clear test cache
 ```bash
 rm -rf test-results/ playwright-report/
-```
+````
 
 ### Update dependencies
+
 ```bash
 npm update
 mvn clean install -DskipTests
