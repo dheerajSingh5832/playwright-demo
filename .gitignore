@@ -11,6 +11,9 @@ allure-results/
 allure-report/
 playwright/.cache/
 
+# MCP snapshots and temporary files
+.playwright-mcp/
+
 # Screenshots & Videos
 screenshots/
 videos/
